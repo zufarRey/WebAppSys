@@ -6,6 +6,20 @@
     "configurations": [
         {
             "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "edu.fra.uas.v2setter.Main",
+            "projectName": "SpringIoC"
+        },
+        {
+            "type": "java",
+            "name": "MainTest",
+            "request": "launch",
+            "mainClass": "edu.fra.uas.v1instantiating.MainTest",
+            "projectName": "SpringIoC"
+        },
+        {
+            "type": "java",
             "name": "UserApplication",
             "request": "launch",
             "mainClass": "edu.fra.uas.UserApplication",
