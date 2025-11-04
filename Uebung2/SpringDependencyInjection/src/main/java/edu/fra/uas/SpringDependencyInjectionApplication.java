@@ -6,13 +6,24 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
+import edu.fra.uas.service.CounterService;
 import edu.fra.uas.service.FirstService;
+import edu.fra.uas.service.SecondService;
+import edu.fra.uas.service.ThirdService;
 
 @SpringBootApplication
 public class SpringDependencyInjectionApplication {
 	
+	
 	@Autowired
 	private FirstService firstService;
+
+	@Autowired
+	private SecondService secondService;
+
+	@Autowired
+	private ThirdService thirdService;
+
 	
 	public static void main(String[] args) {
 		SpringApplication.run(SpringDependencyInjectionApplication.class, args);
@@ -24,8 +35,12 @@ public class SpringDependencyInjectionApplication {
 
 			@Override
 			public void run(String... args) throws Exception {
-//				FirstService firstService = new FirstService();
+				//FirstService firstService = new FirstService();
+				
 				firstService.doSomething();
+				firstService.counting();
+				secondService.counting();
+				thirdService.counting();
 			}
 		};
 		return action;

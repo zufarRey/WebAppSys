@@ -5,12 +5,19 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
+
+
 @Component
-@Qualifier("pleaseDrill")
-public class Drilling implements Work{
-    private static final Logger LOGGER = LoggerFactory.getLogger(Drilling.class);
+@Qualifier("pleaseClean")
+public class Cleaning implements Work {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(Painting.class);
+
+    
 
     public void doWork() {
-        LOGGER.info(" --> drill a hole into the wall");
+        LOGGER.info(" --> bring the trash out");
     }
+
+
 }

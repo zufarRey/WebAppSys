@@ -27,6 +27,7 @@ public class SpringIoCApplication {
     // v3autowired
    @Autowired
     private MasterV3 masterV3;
+    private MasterV3 geselle;
 
     public static void main(String[] args) {
         SpringApplication.run(SpringIoCApplication.class, args);
@@ -53,6 +54,7 @@ public class SpringIoCApplication {
 
                 // v3autowired
                masterV3.delegateWork();
+
             }
         };
         return action;
