@@ -14,9 +14,10 @@ public class InitData {
     private final Logger log = org.slf4j.LoggerFactory.getLogger(InitData.class);
     
     @Autowired
-    UserService userService;
+    UserService userService;//injiziere ein userService bean rein
 
-    @PostConstruct
+    @PostConstruct // „Führe diese Methode direkt nach der Erstellung des Beans aus.
+    // idf erstelle automatisch ein bean der den admin darstellt und 2 normal user beans “
     public void init() {
         log.debug("### Initialize Data ###");
 
@@ -36,7 +37,7 @@ public class InitData {
         user.setLastName("Adams");
         user.setEmail("alice@example.com");
         user.setPassword("alice1234");
-        userService.createUser(user);
+        userService.createUser(user); //config-> leitet zu serivce sagt füge ihn ein -> repostiory führt m() zum einfügen aus->db kontanktiert
 
         log.debug("create user bob");
         user = new User();
