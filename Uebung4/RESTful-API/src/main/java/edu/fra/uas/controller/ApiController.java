@@ -50,16 +50,50 @@ public class ApiController {
         List<UserDTO> users = userService.getAllUsersDTO();       
         if (users.isEmpty()) {
             return ResponseEntity.noContent().build();
-        } else if (users.size() > MAX_USERS && page == null) {
-            int lastPage = (users.size() / MAX_USERS) + 1;
-            Link first = linkTo(methodOn(ApiController.class).list(1)).withRel(IanaLinkRelations.FIRST);
+        } else if (users.size() > MAX_USERS && page == null) { // wenn size größer max user=2 s.o und die seite leer ist 
+            int lastPage = (users.size() / MAX_USERS) + 1; // size/s +1  für ungerade werte um die letzt seite herauszufinden  
+            // linkTo baut die URL. Grundlage dafür ist methodOn(), 
+            // das einen Fake-Aufruf (Proxy) der Controller-Methode erzeugt.
+            // Dieser Fake-Aufruf wird NICHT ausgeführt, sondern dient nur dazu,
+            // dass Spring die zugehörige Klasse, Methode und Parameter erkennt um damit die Url zu bauen.
+            // Vorteil wenn mapping verändert wird speicher der proxy aufruf die neuen wege da es nicht hartcodier ist 
+
+            // Spring liest dann die Mapping-Annotationen:
+            // ApiController.class -> @RequestMapping("/api")
+            // list() -> @GetMapping("/users")
+            // Parameter page = 1 -> ergibt ?page=1 der parametername wird aus der methode entommen s.o list integer page
+            // Diese Teile werden kombiniert zu: "/api/users?page=1"
+            // linkTo() erzeugt daraus die endgültige URL.
+            // withRel() legt fest, welchen Namen der Link im JSON hat (z. B. first, next, last).
+            Link first = linkTo(methodOn(ApiController.class).list(1)).withRel(IanaLinkRelations.FIRST); 
             Link next = linkTo(methodOn(ApiController.class).list(2)).withRel(IanaLinkRelations.NEXT);
             Link last = linkTo(methodOn(ApiController.class).list(lastPage)).withRel(IanaLinkRelations.LAST);
+
+
+            // CollectionModel.of(...) erstellt ein HATEOAS-Container-Objekt,
+            // das sowohl die eigentlichen Daten (die User) als auch die Links enthält.
+            // users.subList(0, MAX_USERS) liefert nur die ersten MAX_USERS User,
+            // also die erste Seite der Ergebnisse.
+            // Durch .add(first, next, last) werden die Navigationslinks (first/next/last)
+            // direkt in das CollectionModel eingefügt, sodass der Client weiß,
+            // wie er zu den anderen Seiten navigieren kann.
+
+            // Die folgende Schleife geht jeden User aus dem result durch.
+            // Für jeden User wird ein individueller Self-Link erzeugt:
+            // linkTo(ApiController.class) liefert den Basis-Pfad "/api"
+            // .slash("/users/" + user.getId()) hängt "/users/{id}" daran,
+            // sodass die vollständige URL zur Einzelresource entsteht, z. B. "/api/users/5".
+            // withSelfRel() markiert den Link als "self", also als Link zur Resource selbst.
+            // user.add(selfLink) fügt diesen Self-Link dem jeweiligen UserDTO hinzu,
+            // sodass der Client zu jedem einzelnen User dessen Detailadresse erhält.
+
             CollectionModel<UserDTO> result = CollectionModel.of(users.subList(0, MAX_USERS)).add(first, next, last);
             for (UserDTO user : result) {
                 Link selfLink = linkTo(ApiController.class).slash("/users/" + user.getId()).withSelfRel();
                 user.add(selfLink);
             }
+
+            
             return new ResponseEntity<>(result, HttpStatus.PARTIAL_CONTENT);
         } else if (page != null) {
             Partition<UserDTO> partition = Partition.ofSize(users, MAX_USERS);
